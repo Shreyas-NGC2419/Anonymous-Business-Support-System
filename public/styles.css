@@ -1,0 +1,14 @@
+li{
+    list-style-type: disc;
+    padding: 5px;
+    box-shadow: 2px 2px 2px black;
+    margin-top: 8px;
+    background-color: thistle;
+    border-radius: 5px;
+
+}
+
+#reviewList{
+    text-align: left;
+    padding: 5px;
+}
