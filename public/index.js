@@ -255,37 +255,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('addReviewForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-
+    
         const reviewText = document.getElementById('reviewText').value;
         const starRating = document.getElementById('starRating').value;
         const businessId = document.getElementById('addReviewPopup').dataset.businessId;
-
+    
         console.log("Submitting review for business ID:", businessId); // Debugging
-
+    
         if (!businessId) {
             alert("No business ID found. Cannot submit review.");
             return;
         }
-
+    
         try {
+            // Send the review data to the backend
             const response = await fetch(`/api/businesses/${businessId}/reviews`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reviewText, starRating }),
             });
-
+    
+            // Check if the response is OK (status 200-299)
             if (response.ok) {
+                // Parse the JSON response from the backend
+                const responseData = await response.json(); // This will automatically parse JSON and handle emojis
+    
+                // Assuming the response has a "sentiment" field with the emoji
+                const sentiment = responseData.sentiment; 
+    
+                console.log("Sentiment received:", sentiment); // This will print the sentiment, including the emoji correctly
+    
                 alert('Review submitted successfully!');
                 closePopup('addReviewPopup');
             } else {
+                // If there's an error, display the message from the backend
                 const errorData = await response.json();
                 alert(`Failed to submit review: ${errorData.message}`);
             }
         } catch (error) {
+            // Handle any network or unexpected errors
             console.error('Error submitting review:', error);
             alert('An error occurred while submitting your review.');
         }
     });
+    
 
 
 
@@ -310,11 +323,13 @@ function openViewReviewsModal(businessId) {
                 reviews.forEach(review => {
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
-                        <p><strong>Review:</strong> ${review.reviewText}</p>
-                        <p><strong>Rating:</strong> ${review.starRating} ★</p>
+                        <p>${review.reviewText}</p>
+                        <p>Star Rating: ${review.starRating}</p>
+                        <p>Sentiment: ${review.sentiment}</p>
                     `;
                     reviewList.appendChild(listItem);
                 });
+                
             } else {
                 reviewList.innerHTML = '<p>No reviews yet.</p>';
             }

@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Business = require('../models/Business');
 
+const { exec } = require('child_process');
+const path = require('path');
+
 // Create a new business
 router.post('/business', async (req, res) => {
   try {
@@ -60,32 +63,53 @@ router.get('/reviews/:businessId', async (req, res) => {
 router.post('/businesses/:businessId/reviews', async (req, res) => {
   const { businessId } = req.params;
   const { reviewText, starRating } = req.body;
-  console.log(req.body)
 
   if (!reviewText || !starRating) {
-      return res.status(400).json({ message: 'Review text and star rating are required.' });
+    return res.status(400).json({ message: 'Review text and star rating are required.' });
   }
-
 
   try {
-      // Find the business by ID
-      const business = await Business.findById(businessId);
-      if (!business) {
-          return res.status(404).json({ message: 'Business not found.' });
+    // Path to the Python script
+    const scriptPath = path.join(__dirname, '../vader/sentiment_combi.py');
+
+    // Encode the review text to handle special characters like emojis
+    const encodedReviewText = encodeURIComponent(reviewText);
+
+    // Run the Python script for sentiment analysis
+    exec(`python "${scriptPath}" "${encodedReviewText}"`, { encoding: 'utf8' }, async (error, stdout, stderr) => {
+      if (error) {
+        console.error('Error running sentiment analysis:', error);
+        return res.status(500).json({ message: 'Failed to analyze sentiment.' });
+      }
+      if (stderr) {
+        console.error('Python script error output:', stderr);
       }
 
-      // Add the review to the business's reviews array
-      business.reviews.push({ reviewText, starRating });
+      // Parse the output as JSON (this will include emojis)
+      try {
+        const sentiment = JSON.parse(stdout.trim()); // Ensure it's correctly parsed
+        // Add the review with sentiment to the business's reviews
+        const business = await Business.findById(businessId);
+        if (!business) {
+          return res.status(404).json({ message: 'Business not found.' });
+        }
+        business.reviews.push({ reviewText, starRating, sentiment: sentiment.sentiment });
+        await business.save();
 
-      // Save changes
-      await business.save();
-
-      res.status(201).json({ message: 'Review added successfully.' });
+        res.status(201).json({ message: 'Review added successfully with sentiment analysis.', sentiment: sentiment.sentiment });
+      } catch (err) {
+        console.error('Error parsing sentiment output:', err);
+        res.status(500).json({ message: 'Failed to parse sentiment analysis.' });
+      }
+    });
   } catch (error) {
-      console.error('Error adding review:', error.message);
-      res.status(500).json({ message: 'Failed to add review.', error: error.message });
+    console.error('Error adding review:', error);
+    res.status(500).json({ message: 'Failed to add review.' });
   }
 });
+
+
+
 
 
 
