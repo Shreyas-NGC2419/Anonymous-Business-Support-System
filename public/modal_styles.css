@@ -7,7 +7,7 @@
    top: 0;
    width: 100%;
    height: 100%;
-   background-color: rgba(0, 0, 0, 0.5);
+   background-color: rgba(0, 0, 0, 0.7);
    /* Dark overlay */
    padding-top: 60px;
 }
@@ -18,18 +18,19 @@
    margin: 5% auto;
    padding: 20px;
    border-radius: 10px;
-   /* Rounded corners */
    width: 40%;
-   /* Adjust the width as needed */
+   height: 50%;
+   overflow-y: scroll;
    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-   /* Soft shadow */
    text-align: center;
 }
 
 /* Close Button */
 .close-btn {
-   color: #aaa;
+   color: #ff0000;
    font-size: 30px;
+   position: fixed;
+   top:0;
    font-weight: bold;
    cursor: pointer;
    transition: color 0.3s;
@@ -38,7 +39,7 @@
 /* Close Button Hover */
 .close-btn:hover,
 .close-btn:focus {
-   color: #333;
+   color: #d10707;
 }
 
 /* Title Styling */

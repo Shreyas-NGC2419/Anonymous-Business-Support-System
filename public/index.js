@@ -124,9 +124,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         const marker = L.marker([business.coordinates.lat, business.coordinates.lng]).addTo(map);
 
                         const popupContent = `
-    <strong>${business.b_name}</strong><br><strong>${business.category}</strong><br>${business.description}<br>
-    <button onclick="openAddReviewPopup('${business._id}')">Add Review</button>
-    <button onclick="openViewReviewsModal('${business._id}')">View Reviews</button>
+    <strong>${business.b_name}</strong><br><strong>Category: ${business.category}</strong><br>${business.description}<br>
+    <button onclick="openAddReviewPopup('${business._id}')" style="background-color:green; color:white; padding:2px 5px; border-radius:5px; margin-top:5px">Add Review</button>
+    <button onclick="openViewReviewsModal('${business._id}')" style="background-color:gold; padding:2px 5px; border-radius:5px; margin-top:5px">View Reviews</button>
 `;
 
                         marker.bindPopup(popupContent);
@@ -255,18 +255,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('addReviewForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-    
+
         const reviewText = document.getElementById('reviewText').value;
         const starRating = document.getElementById('starRating').value;
         const businessId = document.getElementById('addReviewPopup').dataset.businessId;
-    
+
         console.log("Submitting review for business ID:", businessId); // Debugging
-    
+
         if (!businessId) {
             alert("No business ID found. Cannot submit review.");
             return;
         }
-    
+
         try {
             // Send the review data to the backend
             const response = await fetch(`/api/businesses/${businessId}/reviews`, {
@@ -274,17 +274,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reviewText, starRating }),
             });
-    
+
             // Check if the response is OK (status 200-299)
             if (response.ok) {
                 // Parse the JSON response from the backend
                 const responseData = await response.json(); // This will automatically parse JSON and handle emojis
-    
+
                 // Assuming the response has a "sentiment" field with the emoji
-                const sentiment = responseData.sentiment; 
-    
+                const sentiment = responseData.sentiment;
+
                 console.log("Sentiment received:", sentiment); // This will print the sentiment, including the emoji correctly
-    
+
                 alert('Review submitted successfully!');
                 closePopup('addReviewPopup');
             } else {
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('An error occurred while submitting your review.');
         }
     });
-    
+
 
 
 
@@ -329,7 +329,7 @@ function openViewReviewsModal(businessId) {
                     `;
                     reviewList.appendChild(listItem);
                 });
-                
+
             } else {
                 reviewList.innerHTML = '<p>No reviews yet.</p>';
             }
