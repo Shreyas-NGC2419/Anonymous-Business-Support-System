@@ -221,6 +221,20 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .addTo(map);
 
+
+        // Custom red marker for the user
+        const redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // Valid URL for a red icon
+            iconSize: [25, 41], // Size of the icon
+            iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+            popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
+            shadowSize: [41, 41], // Size of the shadow
+            shadowAnchor: [12, 41], // Anchor point of the shadow
+          });
+          
+          
+
     // Function to locate the user and center the map on their location
     function locateUser() {
         if (navigator.geolocation) {
@@ -233,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 map.setView([lat, lng], 13);
 
                 // Optionally, add a marker to indicate user's location
-                L.marker([lat, lng]).addTo(map)
+                L.marker([lat, lng],{icon:redIcon}).addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
             }, function (error) {
