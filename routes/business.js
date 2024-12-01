@@ -5,6 +5,16 @@ const Business = require('../models/Business');
 const { exec } = require('child_process');
 const path = require('path');
 
+
+const { anonymousTokenMiddleware,enforceAnonymousToken } = require('../middlewares/anonymousTokenMiddleware')
+const cookieParser = require('cookie-parser');
+router.use(cookieParser()); // Parse cookies in requests
+
+// Apply the middleware globally
+router.use(anonymousTokenMiddleware);
+
+
+
 // Create a new business
 router.post('/business', async (req, res) => {
   try {
@@ -60,7 +70,7 @@ router.get('/reviews/:businessId', async (req, res) => {
 
 
 // POST: Add a review for a specific business
-router.post('/businesses/:businessId/reviews', async (req, res) => {
+router.post('/businesses/:businessId/reviews',enforceAnonymousToken, async (req, res) => {
   const { businessId } = req.params;
   const { reviewText, starRating } = req.body;
 
