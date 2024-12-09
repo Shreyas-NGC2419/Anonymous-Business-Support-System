@@ -222,18 +222,18 @@ document.addEventListener('DOMContentLoaded', function () {
         .addTo(map);
 
 
-        // Custom red marker for the user
-        const redIcon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // Valid URL for a red icon
-            iconSize: [25, 41], // Size of the icon
-            iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
-            popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
-            shadowSize: [41, 41], // Size of the shadow
-            shadowAnchor: [12, 41], // Anchor point of the shadow
-          });
-          
-          
+    // Custom red marker for the user
+    const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // Valid URL for a red icon
+        iconSize: [25, 41], // Size of the icon
+        iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+        popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
+        shadowSize: [41, 41], // Size of the shadow
+        shadowAnchor: [12, 41], // Anchor point of the shadow
+    });
+
+
 
     // Function to locate the user and center the map on their location
     function locateUser() {
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 map.setView([lat, lng], 13);
 
                 // Optionally, add a marker to indicate user's location
-                L.marker([lat, lng],{icon:redIcon}).addTo(map)
+                L.marker([lat, lng], { icon: redIcon }).addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
             }, function (error) {
@@ -274,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const starRating = document.getElementById('starRating').value;
         const businessId = document.getElementById('addReviewPopup').dataset.businessId;
 
+
         console.log("Submitting review for business ID:", businessId); // Debugging
 
         if (!businessId) {
@@ -286,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(`/api/businesses/${businessId}/reviews`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reviewText, starRating }),
+                body: JSON.stringify({ reviewText, starRating })
             });
 
             // Check if the response is OK (status 200-299)
@@ -336,13 +337,80 @@ function openViewReviewsModal(businessId) {
             if (reviews.length > 0) {
                 reviews.forEach(review => {
                     const listItem = document.createElement('li');
+                    listItem.dataset.reviewId = review._id;
                     listItem.innerHTML = `
                         <p>${review.reviewText}</p>
                         <p>Star Rating: ${review.starRating}</p>
                         <p>Sentiment: ${review.sentiment}</p>
+                        <p>Upvotes: <span id="upvotes-${review._id}">${review.upvotes}</span></p>
+            <p>Downvotes: <span id="downvotes-${review._id}">${review.downvotes}</span></p>
+            <button class="vote-btn" data-vote-type="upvote" data-review-id="${review._id}">Upvote</button>
+            <button class="vote-btn" data-vote-type="downvote" data-review-id="${review._id}">Downvote</button>
                     `;
                     reviewList.appendChild(listItem);
                 });
+
+                // Function to set a cookie for the review vote
+                function setVoteCookie(reviewId, voteType) {
+                    // Set cookie with expiration of 1 hour (or whatever time limit you choose)
+                    document.cookie = `vote_${reviewId}=${voteType}; max-age=3600; path=/`;
+                }
+
+
+                // Function to check if a cookie exists for this review
+                function getVoteForReview(reviewId) {
+                    const cookies = document.cookie.split('; ');
+                    for (let cookie of cookies) {
+                        if (cookie.startsWith(`vote_${reviewId}=`)) {
+                            return cookie.split('=')[1]; // Return the vote type (e.g., 'upvote' or 'downvote')
+                        }
+                    }
+                    return null; // No vote found
+                }
+
+                // Function to handle the upvote/downvote logic
+                async function handleVote(event, reviewId, voteType) {
+                    const existingVote = getVoteForReview(reviewId);
+
+                    if (existingVote === voteType) {
+                        alert('You have already voted this way on this review!');
+                        return;
+                    }
+
+                    // Proceed with sending the vote to the backend
+                    try {
+                        const response = await fetch(`/api/reviews/${reviewId}/vote`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ voteType })
+                        });
+
+                        const result = await response.json();
+                        if (response.ok) {
+                            // Update UI with new vote counts
+                            document.querySelector(`#upvotes-${reviewId}`).textContent = result.upvotes;
+                            document.querySelector(`#downvotes-${reviewId}`).textContent = result.downvotes;
+                            // Set the cookie to track this vote
+                            setVoteCookie(reviewId, voteType);
+                        } else {
+                            alert(result.message);
+                        }
+                    } catch (error) {
+                        console.error('Error voting:', error);
+                    }
+                }
+
+                // Event listeners for upvote and downvote buttons
+                document.querySelectorAll('.vote-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const voteType = e.target.dataset.voteType;
+                        const reviewId = e.target.dataset.reviewId;
+                        handleVote(e, reviewId, voteType);
+                    });
+                });
+
 
             } else {
                 reviewList.innerHTML = '<p>No reviews yet.</p>';
@@ -352,6 +420,7 @@ function openViewReviewsModal(businessId) {
             console.error('Error fetching reviews:', error);
             reviewList.innerHTML = '<p>Failed to load reviews.</p>';
         });
+
 
     modal.style.display = 'block';
 }

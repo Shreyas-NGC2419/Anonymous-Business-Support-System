@@ -7,6 +7,8 @@ const reviewSchema = new mongoose.Schema({
         type: Object, 
         default: null 
     },
+    upvotes: { type: Number, default: 0 },
+    downvotes: { type: Number, default: 0 },
     timestamp: { type: Date, default: Date.now },
 });
 

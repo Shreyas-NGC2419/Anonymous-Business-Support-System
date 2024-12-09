@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anonymous Local Business Support Network</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="modal_styles.css">
     <link rel="stylesheet" href="styles.css">
+
+
 </head>
 
 <body class="bg-gradient-to-r from-gray-100 to-gray-200 font-sans">
@@ -79,6 +82,7 @@
                 class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
                 Locate Me
             </button>
+
         </section>
 
 
@@ -103,7 +107,7 @@
                         <option value="service">Service</option>
                         <option value="other">Other</option>
                     </select><br>
-
+                    <div class="g-recaptcha" data-sitekey="6LdfOJAqAAAAAC-ZK3eGx7WOF5jJjlB84Gy9I2Q0"></div>
                     <button type="submit" id="BusinessSubBtn">Submit Business</button>
                 </form>
             </div>
@@ -114,7 +118,7 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closePopup('addReviewPopup')">&times;</span>
                 <h2>Add Review</h2>
-                <form id="addReviewForm">
+                <form id="addReviewForm" method="post">
                     <p id="businessDetails">Business details will appear here.</p>
                     <label for="reviewText">Your Review:</label>
                     <textarea id="reviewText" placeholder="Write your review here..." required></textarea><br>
@@ -127,11 +131,12 @@
                         <option value="4">⭐⭐⭐⭐</option>
                         <option value="5">⭐⭐⭐⭐⭐</option>
                     </select><br>
+                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
                     <button type="submit" id="submitReviewBtn">Submit Review</button>
                 </form>
             </div>
         </div>
-        
+
 
 
 
@@ -157,10 +162,16 @@
         </div>
     </footer>
 
+
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
     <script src="index.js"></script>
     <script src="modal_funcs.js"></script>
+
+
+
 </body>
 
 </html>
