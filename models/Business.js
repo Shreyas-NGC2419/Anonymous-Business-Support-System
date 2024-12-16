@@ -15,13 +15,21 @@ const reviewSchema = new mongoose.Schema({
 
 const businessSchema = new mongoose.Schema({
     b_name: { type: String, required: true },
-    description: { type: String },
-    category: { type: String },
-    coordinates: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true },
+  description: { type: String, required: true },
+  category: { type: String, required: true },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'], // GeoJSON requires the type to be 'Point'
+      required: true,
     },
+    coordinates: {
+      type: [Number], // Array of numbers: [lng, lat]
+      required: true,
+    },
+  },
     reviews: [reviewSchema], // Embed reviews as an array
 });
+
 
 module.exports = mongoose.model('Business', businessSchema);

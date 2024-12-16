@@ -17,15 +17,20 @@ router.use(anonymousTokenMiddleware);
 // Create a new business
 router.post('/business', async (req, res) => {
   try {
-    const { b_name, description, coordinates, category } = req.body;
+    const { b_name, description, location, category } = req.body;
 
     // Validate request data
-    if (!b_name || !description || !coordinates || !category) {
+    if (!b_name || !description || !location || !category) {
       return res.status(400).json({ error: 'All fields are required!' });
     }
 
     // Create a new business
-    const newBusiness = new Business({ b_name, description, coordinates, category });
+    const newBusiness = new Business({
+          b_name,
+          description,
+          category,
+          location,
+      });
     const savedBusiness = await newBusiness.save();
 
     res.status(201).json(savedBusiness); // Respond with the saved business
@@ -34,6 +39,10 @@ router.post('/business', async (req, res) => {
     res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
+
+
+
 
 
 // Read the businesses

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const businessRoutes = require('./routes/business');
+const recommendationsRouter = require('./routes/recommendations')
 const path = require('path');
 const Business = require('./models/Business');
 const connectDB = require('./db');
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.use('/api', businessRoutes);
+app.use('/recommendations', recommendationsRouter);
 app.use(cors());
 
 // Route to serve the main HTML file

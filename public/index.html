@@ -40,21 +40,12 @@
         </section>
 
         <!-- Popular Businesses Section -->
-        <section class="mb-8">
-            <h3 class="text-2xl font-semibold mb-6">Popular Businesses</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div
-                    class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-200 transform hover:scale-105 text-center">
-                    <p class="font-semibold text-lg">Business Name 1</p>
-                    <p class="text-gray-600">Brief description goes here</p>
-                </div>
-                <div
-                    class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-200 transform hover:scale-105 text-center">
-                    <p class="font-semibold text-lg">Business Name 2</p>
-                    <p class="text-gray-600">Brief description goes here</p>
-                </div>
-            </div>
-        </section>
+        <div class="mb-8" id="popular-businesses-cont">
+            <h1 class="text-3xl">Popular Businesses In This Area</h1>
+            <section class="mb-8" id="popular-businesses">
+                <h2>Popular Businesses Appear here</h2>
+            </section>
+        </div>
 
         <!-- Loader Section -->
         <div id="loadingSpinner"
@@ -93,10 +84,11 @@
                 <h2>Add Business</h2>
                 <form id="businessForm">
                     <label for="businessName">Business Name:</label>
-                    <input type="text" id="businessName" placeholder="Enter business name" required><br>
+                    <input type="text" id="businessName" name="businessName" placeholder="Enter business name"><br>
 
                     <label for="businessDesc">Business Description:</label>
-                    <input type="text" id="businessDesc" placeholder="Enter business description" required><br>
+                    <input type="text" id="businessDesc" name="businessDesc"
+                        placeholder="Enter business description"><br>
 
                     <!-- Category Dropdown -->
                     <label for="businessCategory">Business Category:</label>
@@ -107,7 +99,7 @@
                         <option value="service">Service</option>
                         <option value="other">Other</option>
                     </select><br>
-                    <div class="g-recaptcha" data-sitekey="6LdfOJAqAAAAAC-ZK3eGx7WOF5jJjlB84Gy9I2Q0"></div>
+                    <!-- <div class="g-recaptcha" data-sitekey="6LdfOJAqAAAAAC-ZK3eGx7WOF5jJjlB84Gy9I2Q0"></div> -->
                     <button type="submit" id="BusinessSubBtn">Submit Business</button>
                 </form>
             </div>
@@ -119,7 +111,10 @@
                 <span class="close-btn" onclick="closePopup('addReviewPopup')">&times;</span>
                 <h2>Add Review</h2>
                 <form id="addReviewForm" method="post">
-                    <p id="businessDetails">Business details will appear here.</p>
+                    <div id="loadingSpinner-review"
+                        class="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin mx-auto"
+                        style="display: none;"></div>
+                    <!-- <p id="businessDetails">Business details will appear here.</p> -->
                     <label for="reviewText">Your Review:</label>
                     <textarea id="reviewText" placeholder="Write your review here..." required></textarea><br>
                     <label for="starRating">Star Rating:</label>
@@ -131,8 +126,9 @@
                         <option value="4">⭐⭐⭐⭐</option>
                         <option value="5">⭐⭐⭐⭐⭐</option>
                     </select><br>
-                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
+                    <!-- <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div> -->
                     <button type="submit" id="submitReviewBtn">Submit Review</button>
+                    
                 </form>
             </div>
         </div>

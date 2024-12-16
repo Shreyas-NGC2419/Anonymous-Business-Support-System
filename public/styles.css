@@ -12,3 +12,23 @@ li{
     text-align: left;
     padding: 5px;
 }
+
+#popular-businesses{
+    display: flex;
+    gap: 20px;
+}
+
+.rec{
+    list-style-type: none;
+    padding: 5px;
+    box-shadow: 2px 2px 2px black;
+    margin-top: 8px;
+    background-color:burlywood;
+    border-radius: 5px;
+    text-wrap: wrap;
+    font-family:monospace;
+    font-size: larger;
+    max-width: 250px;
+    
+    
+}

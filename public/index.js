@@ -1,3 +1,5 @@
+const { findById } = require("../models/Business");
+
 document.addEventListener('DOMContentLoaded', function () {
     const map = L.map('map').setView([16.2, 77.4], 13); // Set default position and zoom level
 
@@ -24,6 +26,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('businessModal');
     const closeModalBtn = document.querySelector('.close-btn');
 
+    // Custom red marker for the user
+    const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // Valid URL for a red icon
+        iconSize: [25, 41], // Size of the icon
+        iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+        popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
+        shadowSize: [41, 41], // Size of the shadow
+        shadowAnchor: [12, 41], // Anchor point of the shadow
+    });
+
+    // Custom green marker for the existing businesses
+    const greenIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png', // Valid URL for a red icon
+        iconSize: [25, 41], // Size of the icon
+        iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+        popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
+        shadowSize: [41, 41], // Size of the shadow
+        shadowAnchor: [12, 41], // Anchor point of the shadow
+    });
+
     // Listen for map click event to place a marker
     map.on('click', function (event) {
         // If a marker already exists, remove it
@@ -48,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Function to handle the business info submission
-    function submitBusinessInfo(lat, lng) {
+    async function submitBusinessInfo(lat, lng) {
         // Get the input values
         const businessName = document.getElementById('businessName').value;
         const businessDesc = document.getElementById('businessDesc').value;
@@ -64,15 +88,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const business = {
             b_name: businessName,
             description: businessDesc,
-            coordinates: { lat, lng },
-            category: businessCategory
+            category: businessCategory,
+            location: { type: "Point", coordinates: [lng, lat] } // Send location in GeoJSON format
         };
 
         // Log the business info for debugging
         console.log("Business Info Submitted:", business);
 
         // Send the business object via a POST request to the backend
-        fetch("http://localhost:3000/api/business", {
+         await fetch("/api/business", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"  // Set header to send JSON data
@@ -99,8 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resetForm();
     }
 
-
-
+    
     // Function to close the modal when clicking the close button
     closeModalBtn.addEventListener('click', function () {
         modal.style.display = 'none';
@@ -116,41 +139,49 @@ document.addEventListener('DOMContentLoaded', function () {
     // Loading all the businesses
     async function loadBusinesses() {
         try {
-            fetch('/api/business') // or your appropriate endpoint
-                .then(response => response.json())
-                .then(businesses => {
-                    // Loop through each business and add a marker to the map
-                    businesses.forEach(business => {
-                        const marker = L.marker([business.coordinates.lat, business.coordinates.lng]).addTo(map);
-
+            const response = await fetch('/api/business'); // Ensure the correct endpoint
+            const businesses = await response.json();
+    
+            businesses.forEach(business => {
+                // Debug log for business data
+                // console.log("Business Data:", business);
+    
+                if (business.location && business.location.coordinates) {
+                    const [lng, lat] = business.location.coordinates;
+    
+                    if (lat !== undefined && lng !== undefined) {
+                        // Add a marker to the map
+                        const marker = L.marker([lat, lng],{icon:greenIcon}).addTo(map);
+    
+                        // Create the popup content
                         const popupContent = `
-    <strong>${business.b_name}</strong><br><strong>Category: ${business.category}</strong><br>${business.description}<br>
-    <button onclick="openAddReviewPopup('${business._id}')" style="background-color:green; color:white; padding:2px 5px; border-radius:5px; margin-top:5px">Add Review</button>
-    <button onclick="openViewReviewsModal('${business._id}')" style="background-color:gold; padding:2px 5px; border-radius:5px; margin-top:5px">View Reviews</button>
-`;
-
+                            <strong>${business.b_name}</strong><br>
+                            <strong>Category:</strong> ${business.category}<br>
+                            ${business.description}<br>
+                            <button onclick="openAddReviewPopup('${business._id}')" 
+                                    style="background-color:green; color:white; padding:2px 5px; border-radius:5px; margin-top:5px">
+                                Add Review
+                            </button>
+                            <button onclick="openViewReviewsModal('${business._id}')" 
+                                    style="background-color:gold; padding:2px 5px; border-radius:5px; margin-top:5px">
+                                View Reviews
+                            </button>
+                        `;
+    
+                        // Bind the popup to the marker
                         marker.bindPopup(popupContent);
-
-                        // Attach event listeners after the content is inserted
-                        marker.on('popupopen', function () {
-                            document.getElementById('addReviewBtn').addEventListener('click', function () {
-                                openPopup('addReviewPopup'); // Open the Add Review Modal
-                            });
-
-                            document.getElementById('viewReviewsBtn').addEventListener('click', function () {
-                                openViewReviewsModal(business._id); // Open the View Reviews Modal
-                            });
-                        });
-
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading businesses:", error);
-                });
+                    } else {
+                        console.warn("Invalid coordinates for business:", business.b_name);
+                    }
+                } else {
+                    console.warn("Missing location data for business:", business.b_name);
+                }
+            });
         } catch (error) {
-            console.error("Failed to load businesses:", error);
+            console.error("Error loading businesses:", error);
         }
     }
+    
 
     //Loading all businesses with category selected
     document.getElementById('filterCategory').addEventListener('change', async (event) => {
@@ -222,18 +253,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .addTo(map);
 
 
-    // Custom red marker for the user
-    const redIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // Valid URL for a red icon
-        iconSize: [25, 41], // Size of the icon
-        iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
-        popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Marker shadow
-        shadowSize: [41, 41], // Size of the shadow
-        shadowAnchor: [12, 41], // Anchor point of the shadow
-    });
-
-
 
     // Function to locate the user and center the map on their location
     function locateUser() {
@@ -283,6 +302,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
+
+             // Show loading spinner
+        document.getElementById('loadingSpinner-review').style.display = 'block';
+
             // Send the review data to the backend
             const response = await fetch(`/api/businesses/${businessId}/reviews`, {
                 method: 'POST',
@@ -312,14 +335,75 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error submitting review:', error);
             alert('An error occurred while submitting your review.');
         }
+
+        finally{
+            // Hide loading spinner
+            document.getElementById('loadingSpinner-review').style.display = 'none';
+        }
+
     });
 
 
 
+    async function fetchRecommendations() {
+        try {
 
+            const center = map.getCenter();
+            const radius = 2;
+            // Construct the query
+            const queryParams = new URLSearchParams({
+                lng: center.lng,
+                lat: center.lat,
+                radius: radius,
+            });
+    
+            // if (targetBusinessId) {
+            //     queryParams.append('businessId', targetBusinessId);
+            // }
+    
+            // Fetch recommendations
+            const response = await fetch(`/recommendations?${queryParams.toString()}`,{method:'GET'});
+            const recommendations = await response.json();
+    
+            // Render recommendations
+            console.log('Recommended businesses:', recommendations);
+            populateRecommendationsSection(recommendations);
+        } catch (error) {
+            console.error('Failed to fetch recommendations:', error);
+        }
+    }
 
+    map.on('moveend', fetchRecommendations); // Fetch recommendations when the user stops moving the map
 
-
+    function populateRecommendationsSection(data) {
+        const recommendationsList = document.getElementById('popular-businesses');
+        recommendationsList.innerHTML = ''; // Clear previous recommendations
+    
+        if (data.message) {
+            // No businesses found
+            recommendationsList.innerHTML = `<li class="rec">${data.message}</li>`;
+            return;
+        }
+    
+        data.forEach(business => {
+            const li = document.createElement('li');
+            li.classList.add('rec')
+            li.setAttribute('b_id',`${business.business_id}`)
+            li.innerHTML = `
+                <strong>${business.business_name}</strong><br>
+                Average Rating: ${business.average_rating.toFixed(1)}<br>
+                `;
+                // Sentiments: ${business.sentiments}<br>
+            recommendationsList.appendChild(li);
+            li.addEventListener('click',()=>{locateBusiness(`${business.business_id}`)});
+        });
+    }
+    
+    function locateBusiness(place_id){
+        console.log(place_id);
+        
+        
+    }
 
 });
 
