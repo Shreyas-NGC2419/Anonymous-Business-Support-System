@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to handle the business info submission
     async function submitBusinessInfo(lat, lng) {
+        document.getElementById("businessForm").addEventListener("submit",(e)=>e.preventDefault())
         // Get the input values
         const businessName = document.getElementById('businessName').value;
         const businessDesc = document.getElementById('businessDesc').value;
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log("Business Added Successfully:", data);
                 // Handle success (you can update the UI or reset the form)
                 alert("Business Added Successfully")
+                location.reload(); //force reload to update the businesses
             })
             .catch(error => {
                 console.error("Failed to add business:", error);
