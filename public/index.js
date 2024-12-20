@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function () {
     const map = L.map('map').setView([16.2, 77.4], 13); // Set default position and zoom level
 
@@ -78,6 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const businessDesc = document.getElementById('businessDesc').value;
         const businessCategory = document.getElementById('businessCategory').value;
 
+        const captchaResponse = grecaptcha.getResponse();
+        if (!captchaResponse) {
+            alert("Please complete the CAPTCHA.");
+            return;
+        }
+
         // Validate input fields
         if (!businessName || !businessDesc) {
             alert("Please fill out both fields.");
@@ -96,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Business Info Submitted:", business);
 
         // Send the business object via a POST request to the backend
-         await fetch("/api/business", {
+        await fetch("/api/business", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"  // Set header to send JSON data
@@ -112,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log("Business Added Successfully:", data);
                 // Handle success (you can update the UI or reset the form)
+                alert("Business Added Successfully")
             })
             .catch(error => {
                 console.error("Failed to add business:", error);
@@ -123,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resetForm();
     }
 
-    
+
     // Function to close the modal when clicking the close button
     closeModalBtn.addEventListener('click', function () {
         modal.style.display = 'none';
@@ -141,18 +146,18 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch('/api/business'); // Ensure the correct endpoint
             const businesses = await response.json();
-    
+
             businesses.forEach(business => {
                 // Debug log for business data
                 // console.log("Business Data:", business);
-    
+
                 if (business.location && business.location.coordinates) {
                     const [lng, lat] = business.location.coordinates;
-    
+
                     if (lat !== undefined && lng !== undefined) {
                         // Add a marker to the map
-                        const marker = L.marker([lat, lng],{icon:greenIcon}).addTo(map);
-    
+                        const marker = L.marker([lat, lng], { icon: greenIcon }).addTo(map);
+
                         // Create the popup content
                         const popupContent = `
                             <strong>${business.b_name}</strong><br>
@@ -167,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 View Reviews
                             </button>
                         `;
-    
+
                         // Bind the popup to the marker
                         marker.bindPopup(popupContent);
                     } else {
@@ -181,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error("Error loading businesses:", error);
         }
     }
-    
+
 
     //Loading all businesses with category selected
     document.getElementById('filterCategory').addEventListener('change', async (event) => {
@@ -216,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //addMarker function
     function addMarker(business) {
         const [lng, lat] = business.location.coordinates;
-        const marker = L.marker([lat, lng],{icon:greenIcon}).addTo(map);
+        const marker = L.marker([lat, lng], { icon: greenIcon }).addTo(map);
 
         const popupContent = `
                             <strong>${business.b_name}</strong><br>
@@ -266,8 +271,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to locate the user and center the map on their location
     async function locateUser() {
         if (navigator.geolocation) {
-        //     // Show loading spinner
-        // document.getElementById('loadingSpinner').style.display = 'block';
+            //     // Show loading spinner
+            // document.getElementById('loadingSpinner').style.display = 'block';
             await navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
@@ -280,8 +285,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 L.marker([lat, lng], { icon: redIcon }).addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
-            //     // Hide loading spinner
-            // document.getElementById('loadingSpinner').style.display = 'none';
+                //     // Hide loading spinner
+                // document.getElementById('loadingSpinner').style.display = 'none';
             }, function (error) {
                 console.error("Geolocation error: ", error);
                 alert("Unable to retrieve your location. Please enable geolocation.");
@@ -306,7 +311,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const starRating = document.getElementById('starRating').value;
         const businessId = document.getElementById('addReviewPopup').dataset.businessId;
 
-
+        const captchaResponse = grecaptcha.getResponse();
+        if (!captchaResponse) {
+            alert("Please complete the CAPTCHA.");
+            return;
+        }
+        console.log("Captcha Response:", captchaResponse);
         console.log("Submitting review for business ID:", businessId); // Debugging
 
         if (!businessId) {
@@ -316,8 +326,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
 
-             // Show loading spinner
-        document.getElementById('loadingSpinner-review').style.display = 'block';
+            // Show loading spinner
+            document.getElementById('loadingSpinner-review').style.display = 'block';
 
             // Send the review data to the backend
             const response = await fetch(`/api/businesses/${businessId}/reviews`, {
@@ -349,9 +359,11 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('An error occurred while submitting your review.');
         }
 
-        finally{
+        finally {
             // Hide loading spinner
             document.getElementById('loadingSpinner-review').style.display = 'none';
+            grecaptcha.reset();
+            document.getElementById('addReviewForm').reset();
         }
 
     });
@@ -360,8 +372,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchRecommendations() {
         try {
-                // Show loading spinner
-        document.getElementById('loadingSpinner').style.display = 'block';
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
             const center = map.getCenter();
             const radius = 3;
             // Construct the query
@@ -370,15 +382,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 lat: center.lat,
                 radius: radius,
             });
-    
+
             // if (targetBusinessId) {
             //     queryParams.append('businessId', targetBusinessId);
             // }
-    
+
             // Fetch recommendations
-            const response = await fetch(`/recommendations?${queryParams.toString()}`,{method:'GET'});
+            const response = await fetch(`/recommendations?${queryParams.toString()}`, { method: 'GET' });
             const recommendations = await response.json();
-    
+
             // Render recommendations
             console.log('Recommended businesses:', recommendations);
             populateRecommendationsSection(recommendations);
@@ -386,9 +398,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Failed to fetch recommendations:', error);
         }
 
-        finally{
+        finally {
             // Hide loading spinner
-        document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('loadingSpinner').style.display = 'none';
         }
     }
 
@@ -397,31 +409,31 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateRecommendationsSection(data) {
         const recommendationsList = document.getElementById('popular-businesses');
         recommendationsList.innerHTML = ''; // Clear previous recommendations
-    
+
         if (data.message) {
             // No businesses found
             recommendationsList.innerHTML = `<li class="rec">${data.message}</li>`;
             return;
         }
-    
+
         data.forEach(business => {
             const li = document.createElement('li');
             li.classList.add('rec')
-            li.setAttribute('b_id',`${business.business_id}`)
+            li.setAttribute('b_id', `${business.business_id}`)
             li.innerHTML = `
                 <strong>${business.business_name}</strong><br>
                 Average Rating: ${business.average_rating.toFixed(1)}<br>
                 `;
-                // Sentiments: ${business.sentiments}<br>
+            // Sentiments: ${business.sentiments}<br>
             recommendationsList.appendChild(li);
-            li.addEventListener('click',()=>{locateBusiness(`${business.business_id}`)});
+            li.addEventListener('click', () => { locateBusiness(`${business.business_id}`) });
         });
     }
-    
-    function locateBusiness(place_id){
+
+    function locateBusiness(place_id) {
         console.log(place_id);
-        
-        
+
+
     }
 
 });

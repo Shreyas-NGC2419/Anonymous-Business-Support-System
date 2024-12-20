@@ -92,15 +92,15 @@
                         placeholder="Enter business description"><br>
 
                     <!-- Category Dropdown -->
-                    <label for="businessCategory">Business Category:</label>
-                    <select id="businessCategory" required>
+                    <label for="businessCategory" class="text-xl">Business Category:</label>
+                    <select id="businessCategory" style="border: 0.5px solid gray; border-radius: 5px; padding: 5px;" required>
                         <option value="">Select Category</option>
                         <option value="restaurant">Restaurant</option>
                         <option value="store">Store</option>
                         <option value="service">Service</option>
                         <option value="other">Other</option>
                     </select><br>
-                    <!-- <div class="g-recaptcha" data-sitekey="6LdfOJAqAAAAAC-ZK3eGx7WOF5jJjlB84Gy9I2Q0"></div> -->
+                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
                     <button type="submit" id="BusinessSubBtn">Submit Business</button>
                 </form>
             </div>
@@ -117,9 +117,9 @@
                         style="display: none;"></div>
                     <!-- <p id="businessDetails">Business details will appear here.</p> -->
                     <label for="reviewText">Your Review:</label>
-                    <textarea id="reviewText" placeholder="Write your review here..." required></textarea><br>
+                    <textarea id="reviewText" style="border: 0.5px solid gray; width: 75%; padding:10px 5px; border-radius: 5px;" placeholder="Write your review here..." required></textarea><br>
                     <label for="starRating">Star Rating:</label>
-                    <select id="starRating" required>
+                    <select id="starRating" style="border: 0.5px solid gray; border-radius: 5px;" required>
                         <option value="">Select</option>
                         <option value="1">⭐</option>
                         <option value="2">⭐⭐</option>
@@ -127,7 +127,7 @@
                         <option value="4">⭐⭐⭐⭐</option>
                         <option value="5">⭐⭐⭐⭐⭐</option>
                     </select><br>
-                    <!-- <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div> -->
+                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
                     <button type="submit" id="submitReviewBtn">Submit Review</button>
                     
                 </form>
