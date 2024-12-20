@@ -29,6 +29,26 @@ li{
     font-family:monospace;
     font-size: larger;
     max-width: 250px;
-    
-    
 }
+
+#contactbox{
+    display: none;
+    border-radius: 25%;
+    text-align: justify;
+    padding: 15px;
+    background-color: #d85700;
+    position: absolute;
+    /* width: 20vh; */
+    right: 12vh;
+    animation: blink 1.5s linear infinite alternate;
+}
+
+@keyframes blink {
+    0% {
+       opacity: 0;
+    }
+ 
+    100% {
+       opacity: 1;
+    }
+ }

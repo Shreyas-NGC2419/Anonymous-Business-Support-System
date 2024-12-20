@@ -36,4 +36,13 @@ function openAddReviewPopup(businessId) {
    addReviewPopup.classList.add('show');
 }
 
+let contact = document.getElementById("contact");
+let contactbox = document.getElementById("contactbox");
 
+
+contact.addEventListener("mouseenter",()=>{
+   contactbox.style.display="block";
+})
+contact.addEventListener("mouseleave",()=>{
+   contactbox.style.display="none";
+})

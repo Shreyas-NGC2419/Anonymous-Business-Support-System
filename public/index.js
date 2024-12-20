@@ -1,4 +1,4 @@
-const { findById } = require("../models/Business");
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const map = L.map('map').setView([16.2, 77.4], 13); // Set default position and zoom level
@@ -215,13 +215,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //addMarker function
     function addMarker(business) {
-        const marker = L.marker([business.coordinates.lat, business.coordinates.lng]).addTo(map);
+        const [lng, lat] = business.location.coordinates;
+        const marker = L.marker([lat, lng],{icon:greenIcon}).addTo(map);
 
         const popupContent = `
-    <strong>${business.b_name}</strong><br><strong>${business.category}</strong><br>${business.description}<br>
-    <button onclick="openAddReviewPopup('${business._id}')">Add Review</button>
-    <button onclick="openViewReviewsModal('${business._id}')">View Reviews</button>
-`;
+                            <strong>${business.b_name}</strong><br>
+                            <strong>Category:</strong> ${business.category}<br>
+                            ${business.description}<br>
+                            <button onclick="openAddReviewPopup('${business._id}')" 
+                                    style="background-color:green; color:white; padding:2px 5px; border-radius:5px; margin-top:5px">
+                                Add Review
+                            </button>
+                            <button onclick="openViewReviewsModal('${business._id}')" 
+                                    style="background-color:gold; padding:2px 5px; border-radius:5px; margin-top:5px">
+                                View Reviews
+                            </button>
+                        `;
 
 
 
@@ -255,9 +264,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Function to locate the user and center the map on their location
-    function locateUser() {
+    async function locateUser() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
+        //     // Show loading spinner
+        // document.getElementById('loadingSpinner').style.display = 'block';
+            await navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 console.log("Current Position:", lat, lng);
@@ -269,6 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 L.marker([lat, lng], { icon: redIcon }).addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
+            //     // Hide loading spinner
+            // document.getElementById('loadingSpinner').style.display = 'none';
             }, function (error) {
                 console.error("Geolocation error: ", error);
                 alert("Unable to retrieve your location. Please enable geolocation.");
@@ -347,9 +360,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchRecommendations() {
         try {
-
+                // Show loading spinner
+        document.getElementById('loadingSpinner').style.display = 'block';
             const center = map.getCenter();
-            const radius = 2;
+            const radius = 3;
             // Construct the query
             const queryParams = new URLSearchParams({
                 lng: center.lng,
@@ -370,6 +384,11 @@ document.addEventListener('DOMContentLoaded', function () {
             populateRecommendationsSection(recommendations);
         } catch (error) {
             console.error('Failed to fetch recommendations:', error);
+        }
+
+        finally{
+            // Hide loading spinner
+        document.getElementById('loadingSpinner').style.display = 'none';
         }
     }
 
