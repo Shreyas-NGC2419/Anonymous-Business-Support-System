@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anonymous Local Business Support Network</title>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+    <script src="https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit" async defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -22,13 +23,12 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-extrabold">Anonymous Business Support Network</h1>
             <nav class="space-x-6 text-lg relative">
-                <a href="#" class="hover:text-gray-400 transition duration-200">Home</a>
-                <a href="#" class="hover:text-gray-400 transition duration-200">Search</a>
                 <a id="contact" href="#" class="hover:text-gray-400 transition duration-200">Contact Us</a>
                 <!-- <a href="#" class="hover:text-gray-400 transition duration-200">Forum</a> -->
             </nav>
         </div>
-        <div id="contactbox">If any Queries regarding the Business Existence or other General Problems, Kindly reach out to us at support@absn.org</div>
+        <div id="contactbox">If any Queries regarding the Business Existence or other General Problems, Kindly reach out
+            to us at support@absn.org</div>
     </header>
 
     <!-- Main Content -->
@@ -93,14 +93,16 @@
 
                     <!-- Category Dropdown -->
                     <label for="businessCategory" class="text-xl">Business Category:</label>
-                    <select id="businessCategory" style="border: 0.5px solid gray; border-radius: 5px; padding: 5px;" required>
+                    <select id="businessCategory" style="border: 0.5px solid gray; border-radius: 5px; padding: 5px;"
+                        required>
                         <option value="">Select Category</option>
                         <option value="restaurant">Restaurant</option>
                         <option value="store">Store</option>
                         <option value="service">Service</option>
                         <option value="other">Other</option>
                     </select><br>
-                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
+                    <!-- <div id="captcha1" class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div> -->
+                    <div id="submitcaptcha"></div>
                     <button type="submit" id="BusinessSubBtn">Submit Business</button>
                 </form>
             </div>
@@ -117,7 +119,9 @@
                         style="display: none;"></div>
                     <!-- <p id="businessDetails">Business details will appear here.</p> -->
                     <label for="reviewText">Your Review:</label>
-                    <textarea id="reviewText" style="border: 0.5px solid gray; width: 75%; padding:10px 5px; border-radius: 5px;" placeholder="Write your review here..." required></textarea><br>
+                    <textarea id="reviewText"
+                        style="border: 0.5px solid gray; width: 75%; padding:10px 5px; border-radius: 5px;"
+                        placeholder="Write your review here..." required></textarea><br>
                     <label for="starRating">Star Rating:</label>
                     <select id="starRating" style="border: 0.5px solid gray; border-radius: 5px;" required>
                         <option value="">Select</option>
@@ -127,9 +131,10 @@
                         <option value="4">⭐⭐⭐⭐</option>
                         <option value="5">⭐⭐⭐⭐⭐</option>
                     </select><br>
-                    <div class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div>
+                    <div id="reviewcaptcha"></div>
+                    <!-- <div id="captcha2" class="g-recaptcha" data-sitekey="6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16"></div> -->
                     <button type="submit" id="submitReviewBtn">Submit Review</button>
-                    
+
                 </form>
             </div>
         </div>
@@ -165,6 +170,10 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script src="index.js"></script>
+    <script>var CaptchaCallback = function () {
+            grecaptcha.render('submitcaptcha', { 'sitekey': '6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16' });
+            grecaptcha.render('reviewcaptcha', { 'sitekey': '6LeVWpAqAAAAAIoVEEJNTY4S5L4larqFsRLpjX16' });
+        };</script>
     <script src="modal_funcs.js"></script>
 
 

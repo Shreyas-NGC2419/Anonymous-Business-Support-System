@@ -67,7 +67,7 @@ def calculate_similarities(df):
     return similarity_matrix
 
 # Recommend businesses
-def recommend_businesses(df, similarity_matrix, business_id, top_n=3):
+def recommend_businesses(df, similarity_matrix, business_id, top_n=4):
     df['business_id'] = df['business_id'].astype(str).str.strip().str.lower()
     business_id = str(business_id).strip().lower()
 

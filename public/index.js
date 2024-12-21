@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const businessDesc = document.getElementById('businessDesc').value;
         const businessCategory = document.getElementById('businessCategory').value;
 
-        const captchaResponse = grecaptcha.getResponse();
+        const captchaResponse = grecaptcha.getResponse(0);
         if (!captchaResponse) {
             alert("Please complete the CAPTCHA.");
             return;
@@ -238,15 +238,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 View Reviews
                             </button>
                         `;
-
-
-
         marker.bindPopup(popupContent);
     }
-
-
-
-
 
 
     // Calling the same function - loadBusinesses
@@ -273,8 +266,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to locate the user and center the map on their location
     async function locateUser() {
         if (navigator.geolocation) {
-            //     // Show loading spinner
-            // document.getElementById('loadingSpinner').style.display = 'block';
+                // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
             await navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
@@ -287,8 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 L.marker([lat, lng], { icon: redIcon }).addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
-                //     // Hide loading spinner
-                // document.getElementById('loadingSpinner').style.display = 'none';
+                    // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
             }, function (error) {
                 console.error("Geolocation error: ", error);
                 alert("Unable to retrieve your location. Please enable geolocation.");
@@ -305,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
     document.getElementById('addReviewForm').addEventListener('submit', async function (event) {
         event.preventDefault();
 
@@ -313,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const starRating = document.getElementById('starRating').value;
         const businessId = document.getElementById('addReviewPopup').dataset.businessId;
 
-        const captchaResponse = grecaptcha.getResponse();
+        const captchaResponse = grecaptcha.getResponse(1);
         if (!captchaResponse) {
             alert("Please complete the CAPTCHA.");
             return;
@@ -377,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Show loading spinner
             document.getElementById('loadingSpinner').style.display = 'block';
             const center = map.getCenter();
-            const radius = 3;
+            const radius = 1;
             // Construct the query
             const queryParams = new URLSearchParams({
                 lng: center.lng,
@@ -427,16 +419,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 Average Rating: ${business.average_rating.toFixed(1)}<br>
                 `;
             // Sentiments: ${business.sentiments}<br>
-            recommendationsList.appendChild(li);
-            li.addEventListener('click', () => { locateBusiness(`${business.business_id}`) });
+            // recommendationsList.appendChild(li);
+            // li.addEventListener('click', () => { locateBusiness(`${business.business_id}`) });
         });
     }
 
-    function locateBusiness(place_id) {
-        console.log(place_id);
-
-
-    }
+    // async function locateBusiness(place_id) {
+    //     console.log(place_id);
+    //     const response = await fetch(`recommendations/findBusiness/${place_id}`);
+    //     console.log(response);
+        
+    //     // const [lng,lat] = response.location.coordinates;
+    //     // console.log(lng,lat);
+    // }
 
 });
 
