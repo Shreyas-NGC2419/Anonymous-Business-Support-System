@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const businessName = document.getElementById('businessName').value;
         const businessDesc = document.getElementById('businessDesc').value;
         const businessCategory = document.getElementById('businessCategory').value;
+        const submitbtn = document.getElementById("BusinessSubBtn");
+        submitbtn.disabled = true;
 
         const captchaResponse = grecaptcha.getResponse(0);
         if (!captchaResponse) {
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert("Failed to add business. Please try again later.");
             });
 
+        submitbtn.disabled = false;
         // Close the modal after submission
         modal.style.display = 'none';
         resetForm();
@@ -141,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function resetForm() {
         document.getElementById('businessName').value = '';
         document.getElementById('businessDesc').value = '';
+        grecaptcha.reset();
     }
 
     // Loading all the businesses
@@ -300,6 +304,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('addReviewForm').addEventListener('submit', async function (event) {
         event.preventDefault();
+        const btn = document.getElementById('submitReviewBtn');
+        btn.disabled = true;
 
         const reviewText = document.getElementById('reviewText').value;
         const starRating = document.getElementById('starRating').value;
@@ -358,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('loadingSpinner-review').style.display = 'none';
             grecaptcha.reset();
             document.getElementById('addReviewForm').reset();
+            btn.disabled = false;
         }
 
     });
@@ -403,10 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateRecommendationsSection(data) {
         const recommendationsList = document.getElementById('popular-businesses');
         recommendationsList.innerHTML = ''; // Clear previous recommendations
-
-        if (data.message) {
+        
+        if (data.length==0) {
             // No businesses found
-            recommendationsList.innerHTML = `<li class="rec">${data.message}</li>`;
+            recommendationsList.innerHTML = `Cannot Find Popular Businesses`;
             return;
         }
 
@@ -419,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 Average Rating: ${business.average_rating.toFixed(1)}<br>
                 `;
             // Sentiments: ${business.sentiments}<br>
-            // recommendationsList.appendChild(li);
+            recommendationsList.appendChild(li);
             // li.addEventListener('click', () => { locateBusiness(`${business.business_id}`) });
         });
     }
@@ -464,7 +471,7 @@ function openViewReviewsModal(businessId) {
 
                 // Function to set a cookie for the review vote
                 function setVoteCookie(reviewId, voteType) {
-                    // Set cookie with expiration of 1 hour (or whatever time limit you choose)
+                    // Set cookie with expiration of 1 hour
                     document.cookie = `vote_${reviewId}=${voteType}; max-age=3600; path=/`;
                 }
 

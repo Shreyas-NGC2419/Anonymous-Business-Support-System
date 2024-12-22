@@ -142,7 +142,7 @@ router.post('/reviews/:reviewId/vote', async (req, res) => {
     // Find the business that contains the review
     const business = await Business.findOne({ 'reviews._id': reviewId });
     if (!business) {
-      return res.status(404).json({ message: 'Review not found' });
+      return res.status(404).json({ message: 'Business not found' });
     }
 
     // Find the specific review
