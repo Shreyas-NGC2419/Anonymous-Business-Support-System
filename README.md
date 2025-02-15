@@ -1,7 +1,9 @@
 #About
+
 The Anonymous Local Business Support Network is a web application that allows users to anonymously review, recommend, and support local businesses. This platform encourages community engagement by providing businesses with valuable feedback while preserving user anonymity.
 
 #Features
+
 Anonymous Business Reviews: Users can add reviews without creating an account.\
 
 Upvote & Downvote Reviews: Prevents spam using cookies and rate-limiting mechanisms.\
@@ -15,6 +17,7 @@ Spam Prevention & Security: Implements Google reCAPTCHA, rate limiting, and IP-b
 Interactive Map Integration: Uses Leaflet.js and OpenStreetMap API to visually display businesses.\
 
 #Tech Stack
+
 Frontend:\
 
 HTML, CSS, JavaScript (with TailwindCSS for styling)\
